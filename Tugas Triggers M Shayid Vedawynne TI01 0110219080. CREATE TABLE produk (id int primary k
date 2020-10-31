@@ -1,0 +1,62 @@
+1. CREATE TABLE produk (id int primary key not null, kode varchar (10), nama varchar (50), stok int);
+
+
+2. INSERT INTO produk VALUES(001,'234','K&N Air Filter',5);
+
+    INSERT INTO produk VALUES(002,'146','Motul 5100',13);
+
+    INSERT INTO produk VALUES(003,'193','Ipone Brake Oil',7);
+
+    INSERT INTO produk VALUES(004,'256','Gear SSS',15);
+
+    INSERT INTO produk VALUES(005,'234','Water Cooler',9);
+
+
+3. CREATE TABLE pembelian_produk (id int primary key not null, kode_produk varchar (10), jumlah_beli int);
+
+
+4. 
+
+CREATE OR REPLACE FUNCTION kurangi_stok( )
+
+      RETURNS TRIGGER
+
+      LANGUAGE PLSQL
+
+      AS
+
+$$
+
+BEGIN
+
+         IF NEW.jumlah <> OLD.jumlah THEN
+
+                     INSERT INTO pembelian_produk(id, kode_produk, jumlah_beli)
+
+                     VALUES(OLD.id, OLD.kode_produk, now( ));
+         END IF;
+
+
+         RETURN NEW;
+
+END;
+
+$$
+
+
+5.
+
+CREATE TRIGGER pengurangan_stok
+
+      AFTER UPDATE
+
+      ON pembelian_produk
+
+      FOR EACH ROW
+
+      EXECUTE PROCEDURE kurangi_stok( );
+
+
+6. INSERT INTO pembelian_produk VALUES(005,'234',2);
+
+7. SELECT * FROM produk;
